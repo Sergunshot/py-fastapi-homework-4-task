@@ -108,6 +108,13 @@ async def register_user(
             detail="Default user group not found."
         )
 
+    background_tasks.add_task(
+        email_sender.send_activation_email,
+        str(user_data.email),
+        "http://127.0.0.1/accounts/register/"
+
+    )
+
     try:
         new_user = UserModel.create(
             email=str(user_data.email),
@@ -129,13 +136,6 @@ async def register_user(
             detail="An error occurred during user creation."
         ) from e
     else:
-
-        background_tasks.add_task(
-            email_sender.send_activation_email,
-            str(new_user.email),
-            "http://127.0.0.1/accounts/login/"
-
-        )
 
         return UserRegistrationResponseSchema.model_validate(new_user)
 
@@ -233,7 +233,7 @@ async def activate_account(
     background_tasks.add_task(
         email_sender.send_activation_complete_email,
         str(activation_data.email),
-        "http://127.0.0.1/accounts/activate/"
+        "http://127.0.0.1/accounts/login/"
 
     )
 
@@ -305,7 +305,7 @@ async def request_password_reset_token(
     responses={
         400: {
             "description": (
-                    "Bad Request - The provided email or token is invalid, "
+                    "Bad Request - The provided email or token is invalid,"
                     "the token has expired, or the user account is not active."
             ),
             "content": {
