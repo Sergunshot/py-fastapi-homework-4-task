@@ -17,6 +17,7 @@ from database import (
     PasswordResetTokenModel,
     RefreshTokenModel
 )
+
 from exceptions import BaseSecurityError
 from notifications import EmailSenderInterface
 from schemas import (

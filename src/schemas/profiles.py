@@ -1,5 +1,4 @@
 from datetime import date
-from typing import Annotated
 
 from fastapi import UploadFile, Form, File, HTTPException
 from pydantic import BaseModel, field_validator, HttpUrl
@@ -11,38 +10,25 @@ from validation import (
     validate_birth_date
 )
 
-from src.database.models.accounts import GenderEnum
-
 
 class ProfileRequestSchema(BaseModel):
-    first_name: Annotated[str, Form(...)]
-    last_name: Annotated[str, Form(...)]
-    gender: Annotated[GenderEnum, Form(...)]
-    date_of_birth: Annotated[date, Form(...)]
-    info: Annotated[str, Form(...)]
-    avatar: Annotated[UploadFile, File(...)]
+    first_name: str
+    last_name: str
+    gender: str
+    date_of_birth: date
+    info: str
+    avatar: UploadFile
 
     @classmethod
     def as_form(
-        cls,
-        first_name: Annotated[str, Form()],
-        last_name: Annotated[str, Form()],
-        gender: Annotated[GenderEnum, Form()],
-        date_of_birth: Annotated[date, Form()],
-        info: Annotated[str, Form()],
-        avatar: Annotated[UploadFile, File()]
+            cls,
+            first_name: str = Form(),
+            last_name: str = Form(),
+            gender: str = Form(),
+            date_of_birth: date = Form(),
+            info: str = Form(),
+            avatar: UploadFile = File()
     ):
-
-        validate_name(first_name)
-        validate_name(last_name)
-        validate_gender(gender)
-        validate_birth_date(date_of_birth)
-
-        if not info.strip():
-            raise ValueError("Info field cannot be empty or contain only spaces.")
-
-        validate_image(avatar)
-
         return cls(
             first_name=first_name,
             last_name=last_name,
@@ -62,3 +48,5 @@ class ProfileResponseSchema(BaseModel):
     date_of_birth: date
     info: str
     avatar: str
+
+    model_config = {"from_attributes": True, }
