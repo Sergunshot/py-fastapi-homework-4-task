@@ -67,7 +67,9 @@ async def create_profile(
         )
 
     token_user_id = decode_token["user_id"]
-    request_result = await db.execute(select(UserModel).options(selectinload(UserModel.group)).where(UserModel.id == token_user_id))
+    request_result = await db.execute(select(UserModel).options(selectinload(UserModel.group)).where(
+        UserModel.id == token_user_id
+    ))
     request_user = request_result.scalar_one_or_none()
     if user_id != token_user_id and request_user.group.name != UserGroupEnum.ADMIN:
         raise HTTPException(
